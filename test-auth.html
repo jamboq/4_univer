@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест авторизации</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+        }
+        .success {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+        .error {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Тест авторизации Theater Lighting Warehouse</h1>
+        
+        <p>Этот тест проверяет работу API авторизации.</p>
+        
+        <button class="test-button" onclick="testLogin()">Тест входа</button>
+        <button class="test-button" onclick="testMe()">Тест /me</button>
+        <button class="test-button" onclick="testCategories()">Тест категорий</button>
+        <button class="test-button" onclick="clearResults()">Очистить</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000';
+        
+        function addResult(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            results.appendChild(div);
+        }
+        
+        async function testLogin() {
+            try {
+                addResult('Попытка входа...', 'info');
+                
+                const response = await fetch(`${API_BASE}/api/users/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: 'admin',
+                        password: 'admin123'
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(`✅ Вход успешен! Пользователь: ${data.user.username}, Роль: ${data.user.role}`, 'success');
+                    localStorage.setItem('token', data.token);
+                } else {
+                    const error = await response.json();
+                    addResult(`❌ Ошибка входа: ${error.error}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Ошибка сети: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testMe() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    addResult('❌ Нет токена. Сначала выполните вход.', 'error');
+                    return;
+                }
+                
+                addResult('Проверка токена...', 'info');
+                
+                const response = await fetch(`${API_BASE}/api/users/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(`✅ Токен валиден! Пользователь: ${data.user.username}`, 'success');
+                } else {
+                    addResult(`❌ Токен недействителен: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Ошибка проверки токена: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testCategories() {
+            try {
+                addResult('Загрузка категорий...', 'info');
+                
+                const response = await fetch(`${API_BASE}/api/categories`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(`✅ Категории загружены! Найдено: ${data.length} категорий`, 'success');
+                    data.forEach(cat => {
+                        addResult(`  - ${cat.name} (${cat.equipment_count || 0} единиц)`, 'info');
+                    });
+                } else {
+                    addResult(`❌ Ошибка загрузки категорий: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Ошибка загрузки категорий: ${error.message}`, 'error');
+            }
+        }
+        
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+        
+        // Автоматический тест при загрузке
+        window.addEventListener('load', () => {
+            addResult('🚀 Тест авторизации запущен', 'info');
+            addResult('Убедитесь, что сервер запущен на http://localhost:3000', 'info');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Склад светового оборудования театра</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Заголовок приложения -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-theater-masks"></i>
+                    <h1>Склад СПО</h1>
+                </div>
+                <div class="header-actions">
+                    <div class="search-container">
+                        <input type="text" id="searchInput" placeholder="Поиск оборудования...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="user-menu">
+                        <button id="userMenuBtn" class="user-btn">
+                            <i class="fas fa-user"></i>
+                            <span id="userName">Гость</span>
+                        </button>
+                        <div id="userMenu" class="user-menu-dropdown">
+                            <a href="#" id="loginBtn">Войти</a>
+                            <a href="#" id="logoutBtn" style="display: none;">Выйти</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Основной контент -->
+        <main class="main-content">
+            <!-- Боковая панель -->
+            <aside class="sidebar">
+                <nav class="nav-menu">
+                    <a href="#" class="nav-item active" data-page="dashboard">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Главная</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="equipment">
+                        <i class="fas fa-lightbulb"></i>
+                        <span>Оборудование</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="categories">
+                        <i class="fas fa-tags"></i>
+                        <span>Категории</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="history">
+                        <i class="fas fa-history"></i>
+                        <span>История</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="reports">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Отчеты</span>
+                    </a>
+                </nav>
+            </aside>
+
+            <!-- Контентная область -->
+            <div class="content">
+                <!-- Главная страница -->
+                <div id="dashboard" class="page active">
+                    <div class="page-header">
+                        <h2>Главная</h2>
+                        <div class="page-actions">
+                            <button class="btn btn-primary" id="addEquipmentBtn">
+                                <i class="fas fa-plus"></i>
+                                Добавить оборудование
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Статистика -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="totalEquipment">0</h3>
+                                <p>Всего оборудования</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="availableEquipment">0</h3>
+                                <p>Доступно</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-tools"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="maintenanceEquipment">0</h3>
+                                <p>На обслуживании</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="brokenEquipment">0</h3>
+                                <p>Неисправно</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Последние действия -->
+                    <div class="recent-actions">
+                        <h3>Последние действия</h3>
+                        <div id="recentActionsList" class="actions-list">
+                            <!-- Список последних действий будет загружен динамически -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Страница оборудования -->
+                <div id="equipment" class="page">
+                    <div class="page-header">
+                        <h2>Оборудование</h2>
+                        <div class="page-actions">
+                            <div class="filters">
+                                <select id="categoryFilter">
+                                    <option value="">Все категории</option>
+                                </select>
+                                <select id="statusFilter">
+                                    <option value="">Все статусы</option>
+                                    <option value="available">Доступно</option>
+                                    <option value="in_use">В использовании</option>
+                                    <option value="maintenance">На обслуживании</option>
+                                    <option value="broken">Неисправно</option>
+                                </select>
+                                <select id="conditionFilter">
+                                    <option value="">Все состояния</option>
+                                    <option value="excellent">Отличное</option>
+                                    <option value="good">Хорошее</option>
+                                    <option value="fair">Удовлетворительное</option>
+                                    <option value="poor">Плохое</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" id="addEquipmentBtn2">
+                                <i class="fas fa-plus"></i>
+                                Добавить
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="equipment-grid" id="equipmentGrid">
+                        <!-- Список оборудования будет загружен динамически -->
+                    </div>
+                </div>
+
+                <!-- Страница категорий -->
+                <div id="categories" class="page">
+                    <div class="page-header">
+                        <h2>Категории</h2>
+                        <div class="page-actions">
+                            <button class="btn btn-primary" id="addCategoryBtn">
+                                <i class="fas fa-plus"></i>
+                                Добавить категорию
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="categories-list" id="categoriesList">
+                        <!-- Список категорий будет загружен динамически -->
+                    </div>
+                </div>
+
+                <!-- Страница истории -->
+                <div id="history" class="page">
+                    <div class="page-header">
+                        <h2>История действий</h2>
+                    </div>
+
+                    <div class="history-list" id="historyList">
+                        <!-- Список истории будет загружен динамически -->
+                    </div>
+                </div>
+
+                <!-- Страница отчетов -->
+                <div id="reports" class="page">
+                    <div class="page-header">
+                        <h2>Отчеты</h2>
+                    </div>
+
+                    <div class="reports-content">
+                        <p>Когда нибудь тут будут отчеты</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Модальные окна -->
+    <!-- Модальное окно входа -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Вход в систему</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginUsername">Имя пользователя</label>
+                        <input type="text" id="loginUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Пароль</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="showRegisterBtn">Регистрация</button>
+                        <button type="submit" class="btn btn-primary">Войти</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно регистрации -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Регистрация пользователя</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="registerUsername">Имя пользователя *</label>
+                        <input type="text" id="registerUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">Email *</label>
+                        <input type="email" id="registerEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Пароль *</label>
+                        <input type="password" id="registerPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerConfirmPassword">Подтвердите пароль *</label>
+                        <input type="password" id="registerConfirmPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerRole">Роль</label>
+                        <select id="registerRole">
+                            <option value="user">Пользователь</option>
+                            <option value="manager">Менеджер</option>
+                            <option value="admin">Администратор</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="showLoginBtn">Войти</button>
+                        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно добавления оборудования -->
+    <div id="equipmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Добавить оборудование</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="equipmentForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="equipmentName">Название *</label>
+                            <input type="text" id="equipmentName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="equipmentInventoryNumber">Инвентарный номер</label>
+                            <input type="text" id="equipmentInventoryNumber">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="equipmentDescription">Описание</label>
+                        <textarea id="equipmentDescription" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="equipmentCategory">Категория *</label>
+                            <select id="equipmentCategory" required>
+                                <option value="">Выберите категорию</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="equipmentSubcategory">Подкатегория</label>
+                            <select id="equipmentSubcategory">
+                                <option value="">Выберите подкатегорию</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="equipmentCondition">Состояние *</label>
+                            <select id="equipmentCondition" required>
+                                <option value="excellent">Отличное</option>
+                                <option value="good">Хорошее</option>
+                                <option value="fair">Удовлетворительное</option>
+                                <option value="poor">Плохое</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="equipmentStatus">Статус *</label>
+                            <select id="equipmentStatus" required>
+                                <option value="available">Доступно</option>
+                                <option value="in_use">В использовании</option>
+                                <option value="maintenance">На обслуживании</option>
+                                <option value="broken">Неисправно</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="equipmentStorageLocation">Место хранения *</label>
+                            <input type="text" id="equipmentStorageLocation" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="equipmentPerformance">Спектакль</label>
+                            <input type="text" id="equipmentPerformance">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="equipmentQuantity">Количество *</label>
+                        <input type="number" id="equipmentQuantity" min="1" value="1" required>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary modal-close">Отмена</button>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно добавления категории -->
+    <div id="categoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Добавить категорию</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="categoryForm">
+                    <div class="form-group">
+                        <label for="categoryName">Название категории *</label>
+                        <input type="text" id="categoryName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="categoryParent">Родительская категория</label>
+                        <select id="categoryParent">
+                            <option value="">Основная категория</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary modal-close">Отмена</button>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Скрипты -->
+    <script src="js/app.js"></script>
+    <script src="js/equipment.js"></script>
+    <script src="js/categories.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>
+
