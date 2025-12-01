@@ -260,7 +260,7 @@ class CategoryManager {
         const subcategoriesHtml = category.subcategories.length > 0 
             ? `<div class="subcategories">
                 ${category.subcategories.map(sub => `
-                    <div class="subcategory-item">
+                    <div class="subcategory-item" onclick="categoryManager.openCategory(${sub.id})" role="button">
                         ${sub.name}
                         <span class="subcategory-count">${sub.equipment_count || 0}</span>
                     </div>
@@ -270,7 +270,7 @@ class CategoryManager {
 
         return `
             <div class="category-item" data-id="${category.id}">
-                <div class="category-header">
+                <div class="category-header" onclick="categoryManager.openCategory(${category.id})" role="button">
                     <div class="category-name">${category.name}</div>
                     <div class="category-count">${category.equipment_count || 0}</div>
                 </div>
@@ -285,6 +285,34 @@ class CategoryManager {
                 </div>
             </div>
         `;
+    }
+
+    // Открытие категории: показываем оборудование в этой (или дочерней) категории
+    openCategory(id) {
+        const category = this.getCategoryById(id);
+        if (!category) {
+            this.app.showNotification('Категория не найдена', 'error');
+            return;
+        }
+
+        // Переходим на страницу оборудования
+        if (this.app && typeof this.app.navigateToPage === 'function') {
+            this.app.navigateToPage('equipment');
+        }
+
+        // Устанавливаем фильтр по категории
+        const categoryFilter = document.getElementById('categoryFilter');
+        if (categoryFilter) {
+            categoryFilter.value = id;
+        }
+
+        // Обновляем список оборудования с учетом фильтра
+        if (this.app && typeof this.app.handleFilterChange === 'function') {
+            this.app.handleFilterChange();
+        } else if (this.app && typeof this.app.loadEquipment === 'function') {
+            // Запасной вариант, если метод фильтрации недоступен
+            this.app.loadEquipment({ category_id: id });
+        }
     }
 
     // Заполнение селектов категорий

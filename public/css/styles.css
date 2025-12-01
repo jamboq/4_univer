@@ -36,6 +36,13 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    background: transparent;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    transition: background 0.2s ease, transform 0.1s ease;
 }
 
 .logo i {
@@ -47,10 +54,45 @@ body {
     font-weight: 600;
 }
 
+.logo:hover {
+    background: rgba(255,255,255,0.12);
+    transform: translateY(-1px);
+}
+
 .header-actions {
     display: flex;
     align-items: center;
     gap: 1rem;
+}
+
+/* Кнопка-гамбургер (мобильное меню) */
+.nav-toggle {
+    display: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    border: none;
+    background: rgba(255,255,255,0.2);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 0;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.nav-toggle span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: #ffffff;
+    border-radius: 999px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.nav-toggle:hover {
+    background: rgba(255,255,255,0.3);
 }
 
 .search-container {
@@ -498,6 +540,12 @@ body {
     border: 1px solid #e5e5e7;
     border-radius: 12px;
     padding: 1.5rem;
+    transition: all 0.2s ease;
+}
+
+.category-item:hover {
+    border-color: #667eea;
+    box-shadow: 0 6px 18px rgba(102, 126, 234, 0.18);
 }
 
 .category-header {
@@ -505,6 +553,7 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
+    cursor: pointer;
 }
 
 .category-name {
@@ -535,6 +584,14 @@ body {
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
     color: #1d1d1f;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.subcategory-item:hover {
+    border-color: #667eea;
+    background: #f0f2ff;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.18);
 }
 
 /* История */
@@ -781,6 +838,12 @@ body {
     .sidebar {
         width: 100%;
         order: 2;
+        display: none;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 72px;
+        z-index: 900;
     }
     
     .content {
@@ -795,6 +858,15 @@ body {
     
     .search-container input {
         width: 100%;
+    }
+
+    .nav-toggle {
+        display: inline-flex;
+    }
+
+    /* Открытое мобильное меню */
+    .sidebar.sidebar-open {
+        display: block;
     }
     
     .stats-grid {

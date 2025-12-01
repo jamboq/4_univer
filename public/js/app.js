@@ -23,8 +23,33 @@ class TheaterWarehouseApp {
                 e.preventDefault();
                 const page = item.dataset.page;
                 this.navigateToPage(page);
+
+                // На мобильных экранах после выбора пункта меню скрываем боковую панель
+                if (window.innerWidth <= 768) {
+                    const sidebar = document.querySelector('.sidebar');
+                    if (sidebar) {
+                        sidebar.classList.remove('sidebar-open');
+                    }
+                }
             });
         });
+
+        // Клик по логотипу — переход на главную
+        const logoHomeBtn = document.getElementById('logoHomeBtn');
+        if (logoHomeBtn) {
+            logoHomeBtn.addEventListener('click', () => {
+                this.navigateToPage('dashboard');
+            });
+        }
+
+        // Кнопка-гамбургер для мобильного меню
+        const navToggle = document.getElementById('navToggle');
+        const sidebar = document.querySelector('.sidebar');
+        if (navToggle && sidebar) {
+            navToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('sidebar-open');
+            });
+        }
 
         // Поиск
         const searchInput = document.getElementById('searchInput');
@@ -106,7 +131,15 @@ class TheaterWarehouseApp {
         if (loginBtn) {
             loginBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                this.showLoginModal();
+                // Если пользователь уже авторизован — показываем удобное окно выхода
+                if (this.currentUser) {
+                    const confirmLogout = confirm(`Вы вошли как ${this.currentUser.username}. Выйти из системы?`);
+                    if (confirmLogout) {
+                        this.logout();
+                    }
+                } else {
+                    this.showLoginModal();
+                }
             });
         }
 
