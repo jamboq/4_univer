@@ -53,9 +53,33 @@ class TheaterWarehouseApp {
 
         // Поиск
         const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
         if (searchInput) {
+            // Поиск при вводе
             searchInput.addEventListener('input', (e) => {
-                this.handleSearch(e.target.value);
+                this.handleUniversalSearch(e.target.value);
+            });
+
+            // Закрытие результатов при клике вне поиска
+            document.addEventListener('click', (e) => {
+                if (!searchInput.contains(e.target) && !searchResults?.contains(e.target)) {
+                    this.hideSearchResults();
+                }
+            });
+
+            // Фокус на поиск
+            searchInput.addEventListener('focus', (e) => {
+                if (e.target.value.trim()) {
+                    this.handleUniversalSearch(e.target.value);
+                }
+            });
+
+            // Закрытие по Escape
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    this.hideSearchResults();
+                    searchInput.blur();
+                }
             });
         }
 
@@ -313,10 +337,12 @@ class TheaterWarehouseApp {
                 this.equipment = await response.json();
                 this.renderEquipment();
                 this.updateStats();
+                return this.equipment;
             }
         } catch (error) {
             console.error('Ошибка загрузки оборудования:', error);
         }
+        return [];
     }
 
     async loadHistory() {
@@ -452,6 +478,201 @@ class TheaterWarehouseApp {
     handleSearch(query) {
         if (this.currentPage === 'equipment') {
             this.loadEquipment({ search: query });
+        }
+    }
+
+    // Универсальный поиск с выпадающим списком
+    async handleUniversalSearch(query) {
+        const searchResults = document.getElementById('searchResults');
+        if (!searchResults) return;
+
+        const trimmedQuery = query.trim();
+
+        // Если запрос пустой, скрываем результаты
+        if (!trimmedQuery) {
+            this.hideSearchResults();
+            return;
+        }
+
+        // Если данные не загружены, загружаем их
+        if (!this.equipment || this.equipment.length === 0) {
+            await this.loadEquipment();
+        }
+        if (!this.categories || this.categories.length === 0) {
+            await this.loadCategories();
+        }
+
+        // Ищем по оборудованию и категориям
+        const results = {
+            equipment: [],
+            categories: []
+        };
+
+        // Поиск по оборудованию
+        if (this.equipment && this.equipment.length > 0) {
+            const searchLower = trimmedQuery.toLowerCase();
+            results.equipment = this.equipment.filter(item => {
+                return (
+                    item.name?.toLowerCase().includes(searchLower) ||
+                    item.description?.toLowerCase().includes(searchLower) ||
+                    item.inventory_number?.toLowerCase().includes(searchLower) ||
+                    item.category_name?.toLowerCase().includes(searchLower) ||
+                    item.subcategory_name?.toLowerCase().includes(searchLower) ||
+                    item.storage_location?.toLowerCase().includes(searchLower) ||
+                    item.performance?.toLowerCase().includes(searchLower)
+                );
+            }).slice(0, 5); // Ограничиваем до 5 результатов
+        }
+
+        // Поиск по категориям
+        if (this.categories && this.categories.length > 0) {
+            const searchLower = trimmedQuery.toLowerCase();
+            this.categories.forEach(category => {
+                if (category.name?.toLowerCase().includes(searchLower)) {
+                    results.categories.push(category);
+                }
+                // Ищем в подкатегориях
+                if (category.subcategories) {
+                    category.subcategories.forEach(sub => {
+                        if (sub.name?.toLowerCase().includes(searchLower)) {
+                            results.categories.push(sub);
+                        }
+                    });
+                }
+            });
+            results.categories = results.categories.slice(0, 5); // Ограничиваем до 5 результатов
+        }
+
+        // Отображаем результаты
+        this.renderSearchResults(results, trimmedQuery);
+    }
+
+    // Рендеринг результатов поиска
+    renderSearchResults(results, query) {
+        const searchResults = document.getElementById('searchResults');
+        if (!searchResults) return;
+
+        const hasEquipment = results.equipment.length > 0;
+        const hasCategories = results.categories.length > 0;
+
+        if (!hasEquipment && !hasCategories) {
+            searchResults.innerHTML = `
+                <div class="search-results-empty">
+                    <i class="fas fa-search" style="font-size: 2rem; color: #d2d2d7; margin-bottom: 0.5rem;"></i>
+                    <div>Ничего не найдено по запросу "${query}"</div>
+                </div>
+            `;
+            searchResults.classList.add('active');
+            return;
+        }
+
+        let html = '';
+
+        // Оборудование
+        if (hasEquipment) {
+            html += '<div class="search-results-section">';
+            html += '<div class="search-results-section-title"><i class="fas fa-lightbulb"></i> Оборудование</div>';
+            results.equipment.forEach(item => {
+                html += `
+                    <div class="search-result-item" data-type="equipment" data-id="${item.id}">
+                        <div class="search-result-item-icon equipment">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="search-result-item-content">
+                            <div class="search-result-item-title">${this.highlightText(item.name, query)}</div>
+                            <div class="search-result-item-subtitle">${item.category_name || ''}${item.inventory_number ? ` • ${item.inventory_number}` : ''}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+        }
+
+        // Категории
+        if (hasCategories) {
+            html += '<div class="search-results-section">';
+            html += '<div class="search-results-section-title"><i class="fas fa-tags"></i> Категории</div>';
+            results.categories.forEach(category => {
+                html += `
+                    <div class="search-result-item" data-type="category" data-id="${category.id}">
+                        <div class="search-result-item-icon category">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <div class="search-result-item-content">
+                            <div class="search-result-item-title">${this.highlightText(category.name, query)}</div>
+                            <div class="search-result-item-subtitle">${category.equipment_count || 0} единиц оборудования</div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+        }
+
+        searchResults.innerHTML = html;
+        searchResults.classList.add('active');
+
+        // Добавляем обработчики кликов
+        searchResults.querySelectorAll('.search-result-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const type = item.dataset.type;
+                const id = item.dataset.id;
+                this.handleSearchResultClick(type, id);
+            });
+        });
+    }
+
+    // Обработка клика по результату поиска
+    handleSearchResultClick(type, id) {
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.value = '';
+        }
+        this.hideSearchResults();
+
+        if (type === 'equipment') {
+            // Переходим на страницу оборудования
+            this.navigateToPage('equipment');
+            // Выделяем конкретное оборудование
+            setTimeout(() => {
+                // Сначала загружаем все оборудование, чтобы найти нужное
+                this.loadEquipment().then(() => {
+                    const equipmentCard = document.querySelector(`.equipment-card[data-id="${id}"]`);
+                    if (equipmentCard) {
+                        equipmentCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        equipmentCard.style.border = '2px solid #667eea';
+                        equipmentCard.style.boxShadow = '0 0 0 4px rgba(102, 126, 234, 0.2)';
+                        setTimeout(() => {
+                            equipmentCard.style.border = '';
+                            equipmentCard.style.boxShadow = '';
+                        }, 2000);
+                    }
+                });
+            }, 300);
+        } else if (type === 'category') {
+            // Переходим на страницу оборудования с фильтром по категории
+            this.navigateToPage('equipment');
+            setTimeout(() => {
+                const categoryFilter = document.getElementById('categoryFilter');
+                if (categoryFilter) {
+                    categoryFilter.value = id;
+                    this.handleFilterChange();
+                }
+            }, 300);
+        }
+    }
+
+    // Подсветка найденного текста
+    highlightText(text, query) {
+        if (!text || !query) return text;
+        const regex = new RegExp(`(${query})`, 'gi');
+        return text.replace(regex, '<mark style="background: #fff3cd; padding: 0 2px; border-radius: 2px;">$1</mark>');
+    }
+
+    // Скрытие результатов поиска
+    hideSearchResults() {
+        const searchResults = document.getElementById('searchResults');
+        if (searchResults) {
+            searchResults.classList.remove('active');
         }
     }
 

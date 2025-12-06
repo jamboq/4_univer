@@ -28,20 +28,14 @@ const demoCategories = [
         name: 'Световое оборудование',
         parent_id: null,
         equipment_count: 15,
-        subcategories: [
-            { id: 2, name: 'Статические приборы', parent_id: 1, equipment_count: 8 },
-            { id: 3, name: 'Динамические приборы', parent_id: 1, equipment_count: 7 }
-        ]
+        subcategories: []
     },
     {
         id: 4,
         name: 'Электробутафория',
         parent_id: null,
         equipment_count: 12,
-        subcategories: [
-            { id: 5, name: '220v', parent_id: 4, equipment_count: 6 },
-            { id: 6, name: '3-24v', parent_id: 4, equipment_count: 6 }
-        ]
+        subcategories: []
     },
     {
         id: 7,
@@ -65,9 +59,9 @@ const demoEquipment = [
         name: 'Прожектор PAR64',
         description: 'Светодиодный прожектор с цветными фильтрами',
         category_id: 1,
-        subcategory_id: 2,
+        subcategory_id: null,
         category_name: 'Световое оборудование',
-        subcategory_name: 'Статические приборы',
+        subcategory_name: null,
         inventory_number: 'SP-001',
         condition: 'excellent',
         status: 'available',
@@ -83,9 +77,9 @@ const demoEquipment = [
         name: 'Сканер лазерный',
         description: 'Лазерный сканер для световых эффектов',
         category_id: 1,
-        subcategory_id: 3,
+        subcategory_id: null,
         category_name: 'Световое оборудование',
-        subcategory_name: 'Динамические приборы',
+        subcategory_name: null,
         inventory_number: 'DP-002',
         condition: 'good',
         status: 'in_use',

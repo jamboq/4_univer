@@ -119,6 +119,119 @@ body {
     top: 50%;
     transform: translateY(-50%);
     color: rgba(255,255,255,0.7);
+    pointer-events: none;
+}
+
+/* Выпадающий список результатов поиска */
+.search-results {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1000;
+    margin-top: 4px;
+}
+
+.search-results.active {
+    display: block;
+    animation: fadeIn 0.2s ease;
+}
+
+.search-results-section {
+    padding: 0.5rem 0;
+}
+
+.search-results-section-title {
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6e6e73;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #e5e5e7;
+    margin-bottom: 0.25rem;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    border-bottom: 1px solid #f5f5f7;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover {
+    background: #f5f5f7;
+}
+
+.search-result-item-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.875rem;
+}
+
+.search-result-item-icon.equipment {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.search-result-item-icon.category {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+.search-result-item-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.search-result-item-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1d1d1f;
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-result-item-subtitle {
+    font-size: 0.75rem;
+    color: #6e6e73;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.search-results-empty {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: #6e6e73;
+    font-size: 0.875rem;
+}
+
+.search-results mark {
+    background: #fff3cd;
+    padding: 0 2px;
+    border-radius: 2px;
+    font-weight: 600;
 }
 
 .user-menu {
@@ -856,8 +969,16 @@ body {
         align-items: stretch;
     }
     
+    .search-container {
+        width: 100%;
+    }
+
     .search-container input {
         width: 100%;
+    }
+
+    .search-results {
+        max-height: 300px;
     }
 
     .nav-toggle {

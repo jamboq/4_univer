@@ -12,6 +12,41 @@ class Database {
     // Создание таблиц
     this.createTables();
     this.insertDefaultData();
+    // Удаление ненужных подкатегорий (после вставки данных)
+    this.removeUnwantedSubcategories();
+  }
+
+  removeUnwantedSubcategories() {
+    // Удаляем подкатегории, которые больше не нужны
+    const unwantedSubcategories = [
+      'Статические приборы',
+      'Динамические приборы',
+      '220v',
+      '3-24v'
+    ];
+
+    // Сначала обновляем оборудование, чтобы убрать ссылки на эти подкатегории
+    unwantedSubcategories.forEach(name => {
+      // Обновляем оборудование, привязанное к этой подкатегории
+      this.db.run(
+        'UPDATE equipment SET subcategory_id = NULL WHERE subcategory_id IN (SELECT id FROM categories WHERE name = ?)',
+        [name],
+        (err) => {
+          if (err) {
+            console.error(`Ошибка обновления оборудования для подкатегории ${name}:`, err);
+          }
+        }
+      );
+
+      // Затем удаляем саму подкатегорию
+      this.db.run('DELETE FROM categories WHERE name = ?', [name], (err) => {
+        if (err) {
+          console.error(`Ошибка удаления подкатегории ${name}:`, err);
+        } else {
+          console.log(`✅ Подкатегория "${name}" удалена`);
+        }
+      });
+    });
   }
 
   createTables() {
@@ -117,35 +152,6 @@ class Database {
         INSERT OR IGNORE INTO categories (name, parent_id) 
         VALUES (?, ?)
       `, [category.name, category.parent_id]);
-    });
-
-    // Создание подкатегорий
-    this.db.all('SELECT id FROM categories WHERE name = ?', ['Световое оборудование'], (err, rows) => {
-      if (rows.length > 0) {
-        const lightingId = rows[0].id;
-        this.db.run(`
-          INSERT OR IGNORE INTO categories (name, parent_id) 
-          VALUES ('Статические приборы', ?)
-        `, [lightingId]);
-        this.db.run(`
-          INSERT OR IGNORE INTO categories (name, parent_id) 
-          VALUES ('Динамические приборы', ?)
-        `, [lightingId]);
-      }
-    });
-
-    this.db.all('SELECT id FROM categories WHERE name = ?', ['Электробутафория'], (err, rows) => {
-      if (rows.length > 0) {
-        const electricalId = rows[0].id;
-        this.db.run(`
-          INSERT OR IGNORE INTO categories (name, parent_id) 
-          VALUES ('220v', ?)
-        `, [electricalId]);
-        this.db.run(`
-          INSERT OR IGNORE INTO categories (name, parent_id) 
-          VALUES ('3-24v', ?)
-        `, [electricalId]);
-      }
     });
   }
 
