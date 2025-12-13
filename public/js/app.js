@@ -96,6 +96,14 @@ class TheaterWarehouseApp {
             this.showCategoryModal();
         });
 
+        // Клики по карточкам статистики
+        document.querySelectorAll('.stat-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const filter = card.dataset.filter;
+                this.handleStatCardClick(filter);
+            });
+        });
+
         // Фильтры
         document.getElementById('categoryFilter')?.addEventListener('change', (e) => {
             this.handleFilterChange();
@@ -479,6 +487,27 @@ class TheaterWarehouseApp {
         if (this.currentPage === 'equipment') {
             this.loadEquipment({ search: query });
         }
+    }
+
+    // Обработка клика по карточке статистики
+    handleStatCardClick(filter) {
+        // Переходим на страницу оборудования
+        this.navigateToPage('equipment');
+        
+        // Применяем фильтр по статусу
+        setTimeout(() => {
+            const statusFilter = document.getElementById('statusFilter');
+            if (statusFilter) {
+                if (filter === 'all') {
+                    // Показываем все оборудование
+                    statusFilter.value = '';
+                } else {
+                    // Применяем фильтр по статусу
+                    statusFilter.value = filter;
+                }
+                this.handleFilterChange();
+            }
+        }, 300);
     }
 
     // Универсальный поиск с выпадающим списком

@@ -85,7 +85,7 @@
 
                     <!-- Статистика -->
                     <div class="stats-grid">
-                        <div class="stat-card">
+                        <div class="stat-card" data-filter="all" id="statCardAll">
                             <div class="stat-icon">
                                 <i class="fas fa-lightbulb"></i>
                             </div>
@@ -94,7 +94,7 @@
                                 <p>Всего оборудования</p>
                             </div>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card" data-filter="available" id="statCardAvailable">
                             <div class="stat-icon">
                                 <i class="fas fa-check-circle"></i>
                             </div>
@@ -103,7 +103,7 @@
                                 <p>Доступно</p>
                             </div>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card" data-filter="maintenance" id="statCardMaintenance">
                             <div class="stat-icon">
                                 <i class="fas fa-tools"></i>
                             </div>
@@ -112,7 +112,7 @@
                                 <p>На обслуживании</p>
                             </div>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card" data-filter="broken" id="statCardBroken">
                             <div class="stat-icon">
                                 <i class="fas fa-exclamation-triangle"></i>
                             </div>
