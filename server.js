@@ -364,12 +364,127 @@ app.get('/api/users/me', (req, res) => {
     }
 });
 
+// API для создания категорий
+app.post('/api/categories', async (req, res) => {
+    try {
+        const { name, parent_id } = req.body;
+        
+        if (!name || name.trim().length === 0) {
+            return res.status(400).json({ error: 'Название категории обязательно' });
+        }
+
+        if (db) {
+            // Проверяем на дубликаты
+            const categories = await db.getCategories();
+            const existingCategory = categories.find(cat => 
+                cat.name.toLowerCase() === name.toLowerCase().trim() && 
+                cat.parent_id === (parent_id || null)
+            );
+            if (existingCategory) {
+                return res.status(400).json({ error: 'Категория с таким названием уже существует' });
+            }
+
+            // Проверяем, что родительская категория существует (если указана)
+            if (parent_id) {
+                const parentCategory = categories.find(cat => cat.id === parent_id);
+                if (!parentCategory) {
+                    return res.status(400).json({ error: 'Родительская категория не найдена' });
+                }
+            }
+
+            // Создаем категорию
+            const category = await db.createCategory({ 
+                name: name.trim(), 
+                parent_id: parent_id || null 
+            });
+            
+            res.status(201).json(category);
+        } else {
+            res.status(501).json({ error: 'Создание категорий недоступно в демо-режиме' });
+        }
+    } catch (error) {
+        console.error('Ошибка создания категории:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// API для обновления категорий
+app.put('/api/categories/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, parent_id } = req.body;
+        
+        if (!name || name.trim().length === 0) {
+            return res.status(400).json({ error: 'Название категории обязательно' });
+        }
+
+        if (db) {
+            // Проверяем, что категория существует
+            const categories = await db.getCategories();
+            const category = categories.find(cat => cat.id === parseInt(id));
+            if (!category) {
+                return res.status(404).json({ error: 'Категория не найдена' });
+            }
+
+            // Проверяем, что родительская категория существует (если указана)
+            if (parent_id) {
+                const parentCategory = categories.find(cat => cat.id === parent_id);
+                if (!parentCategory) {
+                    return res.status(400).json({ error: 'Родительская категория не найдена' });
+                }
+                // Нельзя сделать категорию родителем самой себя
+                if (parseInt(id) === parent_id) {
+                    return res.status(400).json({ error: 'Категория не может быть родителем самой себя' });
+                }
+            }
+
+            // Проверяем на дубликаты (кроме текущей категории)
+            const existingCategory = categories.find(cat => 
+                cat.id !== parseInt(id) &&
+                cat.name.toLowerCase() === name.toLowerCase().trim() && 
+                cat.parent_id === (parent_id || null)
+            );
+            if (existingCategory) {
+                return res.status(400).json({ error: 'Категория с таким названием уже существует' });
+            }
+
+            // Обновляем категорию
+            const updatedCategory = await db.updateCategory(id, { 
+                name: name.trim(), 
+                parent_id: parent_id || null 
+            });
+            
+            res.json(updatedCategory);
+        } else {
+            res.status(501).json({ error: 'Обновление категорий недоступно в демо-режиме' });
+        }
+    } catch (error) {
+        console.error('Ошибка обновления категории:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // API для удаления категорий
 app.delete('/api/categories/:id', async (req, res) => {
     try {
         const { id } = req.params;
         
         if (db) {
+            // Проверяем, что категория существует
+            const categories = await db.getCategories();
+            const category = categories.find(cat => cat.id === parseInt(id));
+            if (!category) {
+                return res.status(404).json({ error: 'Категория не найдена' });
+            }
+
+            // Проверяем, есть ли подкатегории
+            const subcategories = categories.filter(cat => cat.parent_id === parseInt(id));
+            if (subcategories.length > 0) {
+                return res.status(400).json({ 
+                    error: 'Нельзя удалить категорию, у которой есть подкатегории' 
+                });
+            }
+            
             // Проверяем, есть ли оборудование в этой категории
             const equipment = await db.getEquipment({ category_id: id });
             if (equipment.length > 0) {
@@ -378,8 +493,8 @@ app.delete('/api/categories/:id', async (req, res) => {
                 });
             }
             
-            // Здесь нужно добавить метод для удаления категории из базы данных
-            // Пока возвращаем успех для демо-режима
+            // Удаляем категорию
+            await db.deleteCategory(id);
             res.json({ message: 'Категория удалена', id });
         } else {
             res.json({ message: 'Категория удалена (демо-режим)', id });

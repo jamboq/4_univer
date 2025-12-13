@@ -1436,9 +1436,19 @@ class TheaterWarehouseApp {
             });
 
             if (response.ok) {
+                const newCategory = await response.json();
                 this.hideModal(document.getElementById('categoryModal'));
                 this.showNotification('Категория добавлена', 'success');
-                this.loadCategories();
+                
+                // Обновляем список категорий
+                await this.loadCategories();
+                
+                // Если categoryManager существует, обновляем его тоже
+                if (window.categoryManager) {
+                    await window.categoryManager.loadCategories();
+                    window.categoryManager.renderCategoriesList();
+                }
+                
                 document.getElementById('categoryForm').reset();
             } else {
                 const error = await response.json();

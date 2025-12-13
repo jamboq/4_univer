@@ -662,11 +662,14 @@ body {
     border-radius: 12px;
     padding: 1.5rem;
     transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
 }
 
 .category-item:hover {
     border-color: #667eea;
     box-shadow: 0 6px 18px rgba(102, 126, 234, 0.18);
+    transform: translateY(-2px);
 }
 
 .category-header {
@@ -674,7 +677,6 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
-    cursor: pointer;
 }
 
 .category-name {
@@ -713,6 +715,20 @@ body {
     border-color: #667eea;
     background: #f0f2ff;
     box-shadow: 0 2px 8px rgba(102, 126, 234, 0.18);
+}
+
+.category-actions {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e5e7;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    pointer-events: auto;
+}
+
+.category-actions button {
+    pointer-events: auto;
 }
 
 /* История */

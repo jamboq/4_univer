@@ -303,6 +303,46 @@ class Database {
     });
   }
 
+  createCategory(categoryData) {
+    return new Promise((resolve, reject) => {
+      const { name, parent_id } = categoryData;
+
+      this.db.run(`
+        INSERT INTO categories (name, parent_id)
+        VALUES (?, ?)
+      `, [name, parent_id || null], function(err) {
+        if (err) return reject(err);
+        resolve({ id: this.lastID, name, parent_id: parent_id || null });
+      });
+    });
+  }
+
+  updateCategory(id, updateData) {
+    return new Promise((resolve, reject) => {
+      const fields = Object.keys(updateData).map(key => `${key} = ?`).join(', ');
+      const values = Object.values(updateData);
+      values.push(id);
+
+      this.db.run(`
+        UPDATE categories 
+        SET ${fields}
+        WHERE id = ?
+      `, values, function(err) {
+        if (err) return reject(err);
+        resolve({ id, ...updateData });
+      });
+    });
+  }
+
+  deleteCategory(id) {
+    return new Promise((resolve, reject) => {
+      this.db.run('DELETE FROM categories WHERE id = ?', [id], function(err) {
+        if (err) return reject(err);
+        resolve({ id });
+      });
+    });
+  }
+
   // Методы для работы с историей
   addHistoryEntry(entryData) {
     return new Promise((resolve, reject) => {

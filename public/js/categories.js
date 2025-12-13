@@ -260,7 +260,7 @@ class CategoryManager {
         const subcategoriesHtml = category.subcategories.length > 0 
             ? `<div class="subcategories">
                 ${category.subcategories.map(sub => `
-                    <div class="subcategory-item" onclick="categoryManager.openCategory(${sub.id})" role="button">
+                    <div class="subcategory-item" onclick="event.stopPropagation(); categoryManager.openCategory(${sub.id})" role="button">
                         ${sub.name}
                         <span class="subcategory-count">${sub.equipment_count || 0}</span>
                     </div>
@@ -269,17 +269,17 @@ class CategoryManager {
             : '';
 
         return `
-            <div class="category-item" data-id="${category.id}">
-                <div class="category-header" onclick="categoryManager.openCategory(${category.id})" role="button">
+            <div class="category-item" data-id="${category.id}" onclick="categoryManager.openCategory(${category.id})" role="button">
+                <div class="category-header">
                     <div class="category-name">${category.name}</div>
                     <div class="category-count">${category.equipment_count || 0}</div>
                 </div>
                 ${subcategoriesHtml}
-                <div class="category-actions">
-                    <button class="btn btn-sm btn-secondary" onclick="categoryManager.editCategory(${category.id})">
+                <div class="category-actions" onclick="event.stopPropagation()">
+                    <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); categoryManager.editCategory(${category.id})">
                         <i class="fas fa-edit"></i> Редактировать
                     </button>
-                    <button class="btn btn-sm btn-danger" onclick="categoryManager.handleCategoryDelete(${category.id})">
+                    <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); categoryManager.handleCategoryDelete(${category.id})">
                         <i class="fas fa-trash"></i> Удалить
                     </button>
                 </div>
