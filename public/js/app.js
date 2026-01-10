@@ -37,9 +37,13 @@ class TheaterWarehouseApp {
         // Клик по логотипу — переход на главную
         const logoHomeBtn = document.getElementById('logoHomeBtn');
         if (logoHomeBtn) {
-            logoHomeBtn.addEventListener('click', () => {
+            logoHomeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 this.navigateToPage('dashboard');
             });
+        } else {
+            console.warn('Элемент logoHomeBtn не найден');
         }
 
         // Кнопка-гамбургер для мобильного меню
