@@ -5,8 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js",
-    "simple": "node simple-server.js"
+    "dev": "node server.js"
   },
   "keywords": ["theater", "lighting", "warehouse", "inventory", "management", "web"],
   "author": "Theater Lighting Warehouse",

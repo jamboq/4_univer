@@ -59,10 +59,6 @@ npm run web
 
 Откройте http://localhost:3000 в браузере
 
-#### Простая версия (демо-режим)
-```bash
-npm run simple
-```
 
 #### Режим разработки
 ```bash
@@ -91,7 +87,6 @@ theater-lighting-warehouse/
 │       ├── categories.js      # Модуль категорий
 │       └── auth.js            # Модуль аутентификации
 ├── server.js                  # Веб-сервер
-├── simple-server.js           # Простой сервер (демо-режим)
 ├── package.json
 └── README.md
 ```

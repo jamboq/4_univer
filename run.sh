@@ -11,24 +11,18 @@ case "$1" in
         echo "🔧 Запуск в режиме разработки..."
         npm run dev
         ;;
-    "simple")
-        echo "🚀 Запуск простой версии (демо-режим)..."
-        npm run simple
-        ;;
     *)
         echo "🎭 Theater Lighting Warehouse - Система управления складом светового оборудования"
         echo ""
-        echo "Использование: $0 {start|web|dev|simple}"
+        echo "Использование: $0 {start|web|dev}"
         echo ""
         echo "  start/web - Запуск веб-сервера на http://localhost:3000"
         echo "  dev       - Запуск в режиме разработки"
-        echo "  simple    - Запуск простой версии (демо-режим)"
         echo ""
         echo "Примеры:"
         echo "  $0 start   # Запуск веб-сервера"
         echo "  $0 web     # Запуск веб-сервера (альтернатива)"
         echo "  $0 dev     # Запуск в режиме разработки"
-        echo "  $0 simple  # Запуск простой версии"
         echo ""
         exit 1
         ;;
